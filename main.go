@@ -2,6 +2,7 @@ package main
 
 import (
 	"./models"
+	"./modules/api"
 	"./modules/setting"
 
 	"github.com/labstack/echo"
@@ -13,23 +14,8 @@ const (
 	VER = "0.1.0.0811"
 )
 
-type ApiRes struct {
-	Code    int         `json:"code"`
-	Status  string      `json:"status"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
-}
-
-func ApiOK(data interface{}) ApiRes {
-	return ApiRes{Code: 200, Status: "ok", Message: "ok", Data: data}
-}
-
-func ApiErr(code int, msg string) ApiRes {
-	return ApiRes{Code: code, Status: "err", Message: msg, Data: nil}
-}
-
 func version(c *echo.Context) error {
-	return c.JSON(200, ApiOK(VER))
+	return c.JSON(200, api.ResOk(VER))
 }
 
 func main() {
@@ -56,5 +42,6 @@ func bootstraps() {
 
 	models.InitRedisPools()
 	models.RedisCheckConn()
-	log.Info("%v", setting.Cfg)
+
+	log.Debug("%v", setting.Cfg)
 }

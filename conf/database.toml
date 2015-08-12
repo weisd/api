@@ -1,5 +1,5 @@
 DBMaster = ["default"]
-DBSlave = ["default"]
+DBSlave = ["default", "ktkt"]
 
 [DBs.default]
 TYPE = "mysql"

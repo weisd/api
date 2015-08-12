@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"../modules/polling"
 	"../modules/setting"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -17,14 +18,47 @@ import (
 )
 
 var (
-	XormEngines map[string]*xorm.Engine
+	XormEngines   map[string]*xorm.Engine
+	masterPolling *polling.Polling
+	slavePolling  *polling.Polling
 )
 
 func init() {
 	XormEngines = make(map[string]*xorm.Engine)
 }
 
+// Round-Robin
+
+func Master() *xorm.Engine {
+	name := setting.Cfg.DBMaster[masterPolling.Index()]
+	x, ok := XormEngines[name]
+	if !ok {
+		panic("Unknown master name %s", name)
+	}
+
+	log.Debug("Master use db name %s", name)
+
+	return x
+}
+
+func Slave() *xorm.Engine {
+	name := setting.Cfg.DBSlave[slavePolling.Index()]
+	x, ok := XormEngines[name]
+	if !ok {
+		panic("Unknown Slave name %s", name)
+	}
+
+	log.Debug("Slave use db name %s", name)
+
+	return x
+}
+
 func InitDatabaseConn() {
+
+	if len(setting.Cfg.DBMaster) == 0 || len(setting.Cfg.DBSlave) == 0 {
+		panic("setting.Cfg.DBMaster & DBSlave must be set ")
+	}
+
 	for name, conf := range setting.Cfg.DBs {
 		x, err := newEngine(conf)
 		if err != nil {
@@ -34,6 +68,9 @@ func InitDatabaseConn() {
 
 		XormEngines[name] = x
 	}
+
+	masterPolling = polling.NewPolling(len(setting.Cfg.DBMaster))
+	masterPolling = polling.NewPolling(len(setting.Cfg.DBSlave))
 
 	log.Debug("初始化 models done %v", XormEngines)
 }
