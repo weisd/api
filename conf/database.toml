@@ -1,0 +1,41 @@
+DBMaster = ["default"]
+DBSlave = ["default"]
+
+[DBs.default]
+TYPE = "mysql"
+HOST = "localhost"
+DB = "test"
+USER = "root"
+PASSWD = "sdfsdf"
+SSL_MODE = ""
+PATH = ""
+# 连接池的空闲数大小
+MaxIdle = 10
+# 最大打开连接数
+MaxOpen = 10
+
+ShowSQL = true
+ShowDebug = true
+ShowError = true
+ShowWarn = true
+LogPath = "log/xorm.log"
+
+[DBs.ktkt]
+TYPE = "mysql"
+HOST = "localhost"
+DB = "test"
+USER = "root"
+PASSWD = "sdfsdf"
+SSL_MODE = ""
+PATH = ""
+
+# 连接池的空闲数大小
+MaxIdle = 10
+# 最大打开连接数
+MaxOpen = 10
+
+ShowSQL = true
+ShowDebug = true
+ShowError = true
+ShowWarn = true
+LogPath = "log/xorm.log"

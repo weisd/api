@@ -1,8 +1,12 @@
 package main
 
 import (
+	"./models"
+	"./modules/setting"
+
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
+	"github.com/weisd/log"
 )
 
 const (
@@ -29,6 +33,8 @@ func version(c *echo.Context) error {
 }
 
 func main() {
+	bootstraps()
+
 	e := echo.New()
 
 	// Middleware
@@ -40,4 +46,15 @@ func main() {
 
 	// Start server
 	e.Run(":1323")
+}
+
+func bootstraps() {
+	setting.InitConfig()
+	setting.InitServices()
+
+	models.InitDatabaseConn()
+
+	models.InitRedisPools()
+	models.RedisCheckConn()
+	log.Info("%v", setting.Cfg)
 }

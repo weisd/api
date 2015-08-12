@@ -1,0 +1,55 @@
+[[Logs]]
+ENABLE = true
+MODE = "console"
+LEVEL = "Debug"
+# MODE File 使用
+FILE_NAME = "api2_debug.log"
+LOG_ROTATE = true
+MAX_LINES = 1000000
+MAX_SIZE_SHIFT = 28
+DAILY_ROTATE = true
+MAX_DAYS = 7
+
+# conn
+RECONNECT_ON_MSG = false
+RECONNECT        = false
+PROTOCOL         = "tcp"
+ADDR             = ""
+
+# smtp
+USER      = ""
+PASSWD    = ""
+HOST      = ""
+RECEIVERS = ""
+SUBJECT   = ""
+
+# database
+DRIVER = ""
+CONN   = ""
+
+[[Logs]]
+ENABLE = false
+MODE = "file"
+LEVEL = "Debug"
+# MODE File 使用
+FILE_NAME = "api2_debug.log"
+LOG_ROTATE = true
+MAX_LINES = 1000000
+MAX_SIZE_SHIFT = 28
+DAILY_ROTATE = true
+MAX_DAYS = 7
+
+
+[[Logs]]
+ENABLE = true
+MODE = "file"
+LEVEL = "Error"
+# MODE File 使用
+FILE_NAME = "api2_error.log"
+LOG_ROTATE = true
+MAX_LINES = 1000000
+MAX_SIZE_SHIFT = 28
+DAILY_ROTATE = true
+MAX_DAYS = 7
+
+

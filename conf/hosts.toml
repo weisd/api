@@ -1,0 +1,6 @@
+[Hosts.localhost]
+Config = "/"
+#Hostname = "localhost"
+
+[Hosts.weisd]
+Config = "/da"

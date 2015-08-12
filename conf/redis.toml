@@ -1,0 +1,29 @@
+# redis client use 
+[Redis.default]
+ADDR = "127.0.0.1:6379"
+PASSWD = ""
+
+# Maximum number of idle connections in the pool.
+MAX_IDLE = 10
+
+# Maximum number of connections allocated by the pool at a given time.
+# When zero, there is no limit on the number of connections in the pool.
+MAX_ACTIVE = 0
+
+#Close connections after remaining idle for this duration. If the value
+# is zero, then idle connections are not closed. Applications should set
+# the timeout to a value less than the server's timeout.
+IdleTimeout = 30
+
+# If Wait is true and the pool is at the MaxIdle limit, then Get() waits
+# for a connection to be returned to the pool before returning.
+Wait = true
+
+[Redis.10_6_32_210]
+ADDR = "10.6.32.210:6379"
+PASSWD = ""
+
+MAX_IDLE = 10
+MAX_ACTIVE = 0
+IdleTimeout = 30
+Wait = true
