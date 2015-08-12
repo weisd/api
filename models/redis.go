@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"../modules/setting"
@@ -14,6 +15,15 @@ var (
 
 func init() {
 	RedisPools = make(map[string]*redis.Pool)
+}
+
+func Redis(name string) *redis.Pool {
+	p, ok := RedisPools[name]
+	if !ok {
+		panic(fmt.Errorf("Unknown Redis name %s", name))
+	}
+
+	return p
 }
 
 func InitRedisPools() {
