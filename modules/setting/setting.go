@@ -20,6 +20,7 @@ var (
 var Cfg *Configs
 
 type Configs struct {
+	Debug    bool
 	Logs     []LogConfig
 	Hosts    map[string]HostsConf
 	DBs      map[string]DataBaseConfig
@@ -74,6 +75,17 @@ func InitConfig() {
 
 	fmt.Println(ConfigPath, UserPath)
 
+	appConfig()
+}
+
+func appConfig() {
+	configPath := getUserConfigFile("app.toml")
+
+	m := multiconfig.NewWithPath(configPath)
+	err := m.Load(Cfg)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func initHosts() error {

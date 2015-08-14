@@ -33,7 +33,7 @@ func Master() *xorm.Engine {
 	name := setting.Cfg.DBMaster[masterPolling.Index()]
 	x, ok := XormEngines[name]
 	if !ok {
-		panic("Unknown master name %s", name)
+		panic(fmt.Errorf("Unknown master name %s", name))
 	}
 
 	log.Debug("Master use db name %s", name)
@@ -45,7 +45,7 @@ func Slave() *xorm.Engine {
 	name := setting.Cfg.DBSlave[slavePolling.Index()]
 	x, ok := XormEngines[name]
 	if !ok {
-		panic("Unknown Slave name %s", name)
+		panic(fmt.Errorf("Unknown Slave name %s", name))
 	}
 
 	log.Debug("Slave use db name %s", name)
@@ -81,10 +81,10 @@ func newEngine(conf setting.DataBaseConfig) (*xorm.Engine, error) {
 	case "mysql":
 		if conf.HOST[0] == '/' { // looks like a unix socket
 			cnnstr = fmt.Sprintf("%s:%s@unix(%s)/%s?charset=utf8",
-				conf.USER, conf.PASSWD, conf.HOST, conf.NAME)
+				conf.USER, conf.PASSWD, conf.HOST, conf.DB)
 		} else {
 			cnnstr = fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",
-				conf.USER, conf.PASSWD, conf.HOST, conf.NAME)
+				conf.USER, conf.PASSWD, conf.HOST, conf.DB)
 		}
 	case "postgres":
 		var host, port = "127.0.0.1", "5432"
@@ -96,7 +96,7 @@ func newEngine(conf setting.DataBaseConfig) (*xorm.Engine, error) {
 			port = fields[1]
 		}
 		cnnstr = fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s sslmode=%s",
-			conf.USER, conf.PASSWD, host, port, conf.NAME, conf.SSL_MODE)
+			conf.USER, conf.PASSWD, host, port, conf.DB, conf.SSL_MODE)
 	case "sqlite3":
 		os.MkdirAll(path.Dir(conf.PATH), os.ModePerm)
 		cnnstr = "file:" + conf.PATH + "?cache=shared&mode=rwc"

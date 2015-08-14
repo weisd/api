@@ -3,7 +3,7 @@ DBSlave = ["default", "ktkt"]
 
 [DBs.default]
 TYPE = "mysql"
-HOST = "localhost"
+HOST = "localhost:3306"
 DB = "test"
 USER = "root"
 PASSWD = "sdfsdf"
@@ -22,7 +22,7 @@ LogPath = "log/xorm.log"
 
 [DBs.ktkt]
 TYPE = "mysql"
-HOST = "localhost"
+HOST = "localhost:3306"
 DB = "test"
 USER = "root"
 PASSWD = "sdfsdf"

@@ -1,6 +1,7 @@
 package polling
 
 import (
+	"github.com/weisd/log"
 	"math"
 )
 
@@ -16,6 +17,8 @@ func (p *Polling) Index() int {
 		p.Idx = 0
 	}
 
+	log.Info("idx %d t %d", p.Idx, p.Total)
+
 	return p.Idx % p.Total
 }
 
@@ -23,5 +26,5 @@ func NewPolling(l int) *Polling {
 	if l == 0 {
 		return nil
 	}
-	return &Polling{Idx: 0, Total: l}
+	return &Polling{Idx: 0, Total: l - 1}
 }
