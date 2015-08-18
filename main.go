@@ -2,11 +2,16 @@ package main
 
 import (
 	"net/http"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"./models"
 	"./models/user"
 	"./modules/api"
+	"./modules/log"
 	"./modules/setting"
 
 	"github.com/labstack/echo"
@@ -15,7 +20,8 @@ import (
 	_ "github.com/weisd/cache/redis"
 	"github.com/weisd/echo-statistics"
 	"github.com/weisd/jwt"
-	"github.com/weisd/log"
+	// "github.com/weisd/log"
+	"gopkg.in/tylerb/graceful.v1"
 )
 
 const (
@@ -130,18 +136,44 @@ func main() {
 		return c.String(200, "token : %s", token)
 	})
 
+	go HandleResetSignal()
+
 	// Start server
-	e.Run(":1323")
+	// e.Run(":1323")
+	graceful.ListenAndServe(e.Server(":1323"), 20*time.Second)
 }
 
 func bootstraps() {
 	setting.InitConfig()
-	setting.InitServices()
-
+	// setting.InitServices()
+	log.InitLogs()
 	models.InitDatabaseConn()
 
 	models.InitRedisPools()
 	models.RedisCheckConn()
 
 	log.Debug("%v", setting.Cfg)
+}
+
+func resetConfig() {
+	setting.ResetConfig()
+	bootstraps()
+}
+
+// HandleSignal fetch signal from chan then do exit or reload.
+func HandleResetSignal() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGHUP)
+	// Block until a signal is received.
+	for {
+		s := <-c
+		log.Info("comet get a signal %s", s.String())
+		switch s {
+		case syscall.SIGHUP:
+			resetConfig()
+			//return
+		default:
+			continue
+		}
+	}
 }

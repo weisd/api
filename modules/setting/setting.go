@@ -1,7 +1,7 @@
 package setting
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"fmt"
 	"os"
 	"path"
@@ -21,7 +21,7 @@ var Cfg *Configs
 
 type Configs struct {
 	Debug    bool
-	Logs     []LogConfig
+	Logs     map[string][]LogConfig
 	Hosts    map[string]HostsConf
 	DBs      map[string]DataBaseConfig
 	Redis    map[string]RedisConfig
@@ -43,8 +43,16 @@ type HostsConf struct {
 }
 
 func init() {
-	Cfg = new(Configs)
+	Cfg = newCfg()
 	log.NewLogger(0, "console", `{"level": 0}`)
+}
+
+func newCfg() *Configs {
+	return &Configs{}
+}
+
+func ResetConfig() {
+	Cfg = newCfg()
 }
 
 func InitConfig() {
@@ -75,7 +83,7 @@ func InitConfig() {
 
 	fmt.Println(ConfigPath, UserPath)
 
-	appConfig()
+	InitServices()
 }
 
 func appConfig() {
@@ -99,6 +107,7 @@ func initHosts() error {
 }
 
 func InitServices() {
+	appConfig()
 	newLogService()
 	newDBService()
 	newRedisService()
@@ -138,15 +147,6 @@ type LogConfig struct {
 	CONN   string
 }
 
-var logLevels = map[string]string{
-	"Trace":    "0",
-	"Debug":    "1",
-	"Info":     "2",
-	"Warn":     "3",
-	"Error":    "4",
-	"Critical": "5",
-}
-
 func newLogService() {
 	f := "logs.toml"
 	configPath := getUserConfigFile(f)
@@ -157,61 +157,7 @@ func newLogService() {
 		panic(err)
 	}
 
-	for _, conf := range Cfg.Logs {
-		if !conf.ENABLE {
-			continue
-		}
-		level, ok := logLevels[conf.LEVEL]
-		if !ok {
-			log.Fatal(4, "Unknown log level: %s", conf.LEVEL)
-		}
-
-		str := ""
-		switch conf.MODE {
-		case "console":
-			str = fmt.Sprintf(`{"level":%s}`, level)
-		case "file":
-			str = fmt.Sprintf(
-				`{"level":%s,"filename":"%s","rotate":%v,"maxlines":%d,"maxsize":%d,"daily":%v,"maxdays":%d}`,
-				level,
-				conf.FILE_NAME,
-				conf.LOG_ROTATE,
-				conf.MAX_LINES,
-				1<<uint(conf.MAX_SIZE_SHIFT),
-				conf.DAILY_ROTATE, conf.MAX_DAYS,
-			)
-		case "conn":
-			str = fmt.Sprintf(`{"level":%s,"reconnectOnMsg":%v,"reconnect":%v,"net":"%s","addr":"%s"}`, level,
-				conf.RECONNECT_ON_MSG,
-				conf.RECONNECT,
-				conf.PROTOCOL,
-				conf.ADDR)
-		case "smtp":
-
-			tos, err := json.Marshal(conf.RECEIVERS)
-			if err != nil {
-				log.Error(4, "json.Marshal(conf.RECEIVERS) err %v", err)
-				continue
-			}
-
-			str = fmt.Sprintf(`{"level":%s,"username":"%s","password":"%s","host":"%s","sendTos":%s,"subject":"%s"}`, level,
-				conf.USER,
-				conf.PASSWD,
-				conf.HOST,
-				tos,
-				conf.SUBJECT)
-		case "database":
-			str = fmt.Sprintf(`{"level":%s,"driver":"%s","conn":"%s"}`, level,
-				conf.DRIVER,
-				conf.CONN)
-		default:
-			continue
-		}
-
-		log.Info(str)
-		log.NewLogger(conf.BUFFER_LEN, conf.MODE, str)
-		log.Info("Log Mode: %s(%s)", conf.MODE, conf.LEVEL)
-	}
+	log.Info("k \n %v", Cfg.Logs)
 
 }
 
